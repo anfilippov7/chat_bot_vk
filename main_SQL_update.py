@@ -50,9 +50,9 @@ def delete_people_data(id_delete: int) -> 'deleting an entry':
     # Удаляем запись из базы данных People
     try:
         q_blacklist = session.query(Blacklist) #Делаем запрос в базу данных Blacklist
-        q_favourite = session.query(Favourite) #Делаем запрос в базу данных Blacklist
+        q_favourite = session.query(Favourite) #Делаем запрос в базу данных Favourite
         id_list_blacklist = [record_id.id for record_id in q_blacklist.all()] #Делаем list comprehensions с существующими id в базе данных Blacklist
-        id_list_favourite = [record_id.id for record_id in q_favourite.all()] #Делаем list comprehensions с существующими id в базе данных Blacklist
+        id_list_favourite = [record_id.id for record_id in q_favourite.all()] #Делаем list comprehensions с существующими id в базе данных Favourite
         if id_delete not in id_list_blacklist and id_delete not in id_list_favourite:
             session.query(People).filter(People.id == id_delete).delete()
             session.commit()
