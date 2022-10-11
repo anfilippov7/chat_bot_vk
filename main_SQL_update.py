@@ -134,6 +134,7 @@ def delete_blacklist_data(auser_id, vk_id_delete: int) -> 'deleting an entry':
 
 def favourites_record_data(auser_id, id_favourite: int) -> 'record favourite SQL':
     """ Запись данных о людях в таблицу Favourite у пользователя бота
+
     :param auser_id: id пользователя бота telegram
     :param id_favourite: id vk(search_vk_id) который пользователь бота telegram заносит в список избранное
     :var q_people: запрос в таблицу People базы данных для поиска существующих записей у пользователя бота
@@ -165,6 +166,7 @@ def favourites_record_data(auser_id, id_favourite: int) -> 'record favourite SQL
 
 def delete_favourites_data(auser_id, vk_id_delete: int) -> 'deleting an entry':
     """ Удаление записи данных о людях из таблицы Favourite у пользователя бота
+
     :param auser_id: id пользователя бота telegram
     :param vk_id_delete: id vk(search_vk_id) который пользователь бота telegram удаляет из списка избранного
     :return: True, Данные удалены из базы данных favourites!
@@ -185,6 +187,7 @@ session.close()
 
 def display_data_people(auser_id: int) -> 'id vk':
     """ Отображение списка отобранных кандидатов с учетом проверки их отсутствия в черном списке
+
     :param auser_id: id пользователя бота telegram
     :var q_blacklist: запрос в таблицу Blacklist базы данных для поиска существующих записей в черном списке у пользователя бота
     :var id_list_blacklist лист существующих записей id vk(search_vk_id) в таблице Blacklist базы данных у пользователя бота
@@ -205,6 +208,7 @@ def display_data_people(auser_id: int) -> 'id vk':
 
 def display_favorite(auser_id: int) -> 'id vk':
     """ Отображение списка избранных кандидатов
+    
     :param auser_id: id пользователя бота telegram
     :var q_favourite: запрос в таблицу Favourite базы данных для поиска существующих записей в избранном у пользователя бота
     :return: [list] data_display_favorite
