@@ -4,12 +4,16 @@ import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from vk_search import VK, atoken, vk_methods
+from main_SQL_update import people_record_data, display_data_people, favourites_record_data, blacklist_record_data
 
 with open('token.txt') as file:
     token = file.readline()
 
 vk = vk_api.VkApi(token=token)
 longpoll = VkLongPoll(vk)
+peoples = vk_methods.data_maker()
+
+
 # назовем базу данных vk_db
 
 def write_msg(user_id, message, attachment=None, keyboard=None):
@@ -28,28 +32,51 @@ for event in longpoll.listen():
         user_id = event.user_id
         request = event.text.lower()
         vk_user = VK(atoken, user_id)
+        counter = 0
+        person = peoples[counter]
         if request == 'привет':
             keyboard = VkKeyboard(one_time=True)
             buttons = ['Start', 'Пока']
             buttons_color = [VkKeyboardColor.PRIMARY, VkKeyboardColor.NEGATIVE]
-            write_msg(user_id, f'Хай, {user_id}', keyboard=keyboard)
-            ## здесь создаем таблицу в бд, где user_id = имя таблицы!
+            write_msg(user_id,
+                      f'Хай, {vk_methods.get_info()["first_name"]},\nПодобрали для вас несколько вариантов,\n'
+                      f'нажмите "start" чтобы начать поиск пары',
+                      keyboard=keyboard)
         elif request == 'start':
-            for user in vk_methods.search_people(): # здесь должна быть база данных
-                # здесь проверка есть ли юзер в таблицах
-                keyboard = VkKeyboard()
-                buttons = ['Like', 'Dislike', 'Add in favorite', 'Blacklist']
-                buttons_colors = [VkKeyboardColor.POSITIVE, VkKeyboardColor.NEGATIVE, VkKeyboardColor.PRIMARY,
-                                  VkKeyboardColor.SECONDARY]
-                for button, button_color in zip(buttons, buttons_colors):
-                    keyboard.add_button(button, button_color)
-                write_msg(user_id,
-                          f'{user["first_name"]} {user["second_name"]}'
-                          f'{user["profile_link"]}',
-                          attachment=f'{user["first_likes"]},{user["second_likes"]},{user["third_likes"]}',
-                          keyboard=keyboard)
-                break
+            vk_user_id = person['id']
+            keyboard = VkKeyboard()
+            buttons = ['Like', 'Dislike', 'Add in favorite', 'Blacklist']
+            buttons_colors = [VkKeyboardColor.POSITIVE, VkKeyboardColor.NEGATIVE, VkKeyboardColor.PRIMARY,
+                              VkKeyboardColor.SECONDARY]
+            for button, button_color in zip(buttons, buttons_colors):
+                keyboard.add_button(button, button_color)
+            keyboard.add_line()
+            keyboard.add_button(f'Next', VkKeyboardColor.SECONDARY)
+            write_msg(user_id, f'{person["first_name"]}, {person["last_name"]}'
+                               f'{person["profile_link"]}', keyboard=keyboard, attachment=','.join(person["photos"]))
         elif request == 'like':
+            vk_user_id = person['id']
+            # тут должна быть возможность изменить статус
+        elif request == 'dislike':
+            vk_user_id = person['id']
+            blacklist_record_data(user_id, vk_user_id)
+        elif request == 'add in favorite':
+            vk_user_id = person['id']
+            favourites_record_data(user_id, vk_user_id)
+        elif request == 'next':
+            counter += 1
+            person = [counter]
+            vk_user_id = person['id']
+            keyboard = VkKeyboard()
+            buttons = ['Like', 'Dislike', 'Add in favorite', 'Blacklist']
+            buttons_colors = [VkKeyboardColor.POSITIVE, VkKeyboardColor.NEGATIVE, VkKeyboardColor.PRIMARY,
+                              VkKeyboardColor.SECONDARY]
+            for button, button_color in zip(buttons, buttons_colors):
+                keyboard.add_button(button, button_color)
+            keyboard.add_line()
+            keyboard.add_button(f'Next', VkKeyboardColor.SECONDARY)
+            write_msg(user_id, f'{person["first_name"]}, {person["last_name"]}'
+                               f'{person["profile_link"]}', keyboard=keyboard, attachment=','.join(person["photos"]))
 
         elif request == 'пока':
             write_msg(user_id, 'Пока((')

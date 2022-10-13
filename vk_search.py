@@ -4,6 +4,12 @@ import time
 
 
 class VK:
+    """
+    Класс для подбора людей для обратившегося пользователя
+    при создании экземпляра класса нужно передавать следующие значения
+    :param token: токен от приложения ВК
+    :param user_id: ID пользователя, для которого нужно найти пару
+    """
 
     def __init__(self, token: str, user_id: int):
         self.token = token
@@ -12,6 +18,13 @@ class VK:
         self.data_list = []
 
     def get_info(self) -> dict:
+        """
+        Метод для получения информации о пользователе, который работает с программой с помощью метод VK API users.get
+        :return: dict: возвращает словарь с значениями вида {user_id: идентификатор пользователяб,
+                                                            sex: пол пользователя,
+                                                            city: идентификатор (числовое значение) города пользователя,
+                                                            bdate: день рождения пользователя}
+        """
         url = 'https://api.vk.com/method/users.get'
         params = {
             'user_ids': self.user_id,
@@ -21,6 +34,17 @@ class VK:
         return response.json()
 
     def search_people(self) -> dict:
+        """
+        Метод позволяет получить список словарей с данными пользовател по объявленным параметра с помощью метода
+        VK API users.search
+        :return: list: [{'response': {count: количество совпадений, 'items': [{can_access_closed: bool,
+                                                                            first_name: str,
+                                                                            id: int
+                                                                            is_closed: bool,
+                                                                            last_name: str,
+                                                                            track_code: str]}
+
+        """
         url = 'https://api.vk.com/method/users.search'
         info_dict = self.get_info()
         try:
@@ -29,39 +53,35 @@ class VK:
             birthday_year = 2000
         try:
             sex = info_dict['response'][0]['sex']
+            if sex == 1:
+                sex = 2
+            else:
+                sex = 1
         except KeyError:
             sex = 0
         try:
             city = info_dict['response'][0]['city']['id']
         except KeyError:
             city = None
-
-        if sex == 1:
-            params = {
-                'count': 100,
-                'sex': 2,
-                'birth_year': int(birthday_year),
-                'has_photo': 1,
-                'city': city,
-                'status': 1 or 6,
-                'sort': 0,
-                'fields': 'is_closed',
-            }
-        else:
-            params = {
-                'count': 100,
-                'sex': 1,
-                'birth_year': int(birthday_year),
-                'has_photo': 1,
-                'city': city,
-                'status': 1 or 6,
-                'sort': 0,
-                'fields': 'is_closed',
-            }
+        params = {
+            'count': 100,
+            'sex': 2,
+            'birth_year': int(birthday_year),
+            'has_photo': 1,
+            'city': city,
+            'status': 1 or 6,
+            'sort': 0,
+            'fields': 'is_closed',
+        }
         response = requests.get(url, params={**params, **self.params})
         return response.json()
 
     def get_photo(self, user_id) -> list:
+        """
+        Метод позволяет получить самые популярные 3 фотографии пользователя по user_id VK, с помощью VK API photos.get
+        :param user_id: идентификатор пользователя
+        :return: list: [str, str, str]
+        """
         url = 'https://api.vk.com/method/photos.get'
         params = {
             'owner_id': user_id,
@@ -81,6 +101,14 @@ class VK:
         return info
 
     def data_maker(self):
+        """
+        Метод формирует конечные данные для конкретного пользователя и записывает данные в список
+        :return: list: [{first_name: str,
+                        id: int,
+                        last_name: str,
+                        photos: list,
+                        profile_link: str}]
+        """
         for item in self.search_people()['response']['items']:
             if not item['is_closed']:
                 data = {}
