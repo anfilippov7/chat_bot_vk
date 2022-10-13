@@ -38,8 +38,9 @@ for event in longpoll.listen():
             keyboard = VkKeyboard(one_time=True)
             buttons = ['Start', 'Пока']
             buttons_color = [VkKeyboardColor.PRIMARY, VkKeyboardColor.NEGATIVE]
+            name = vk_methods.get_info()["response"][0]["first_name"]
             write_msg(user_id,
-                      f'Хай, {vk_methods.get_info()["first_name"]},\nПодобрали для вас несколько вариантов,\n'
+                      f'Хай, {name},\nПодобрали для вас несколько вариантов,\n'
                       f'нажмите "start" чтобы начать поиск пары',
                       keyboard=keyboard)
         elif request == 'start':
