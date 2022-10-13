@@ -65,7 +65,7 @@ for event in longpoll.listen():
             favourites_record_data(user_id, vk_user_id)
         elif request == 'next':
             counter += 1
-            person = [counter]
+            person = peoples[counter]
             vk_user_id = person['id']
             keyboard = VkKeyboard()
             buttons = ['Like', 'Dislike', 'Add in favorite', 'Blacklist']
