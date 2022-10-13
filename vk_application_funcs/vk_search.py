@@ -1,6 +1,10 @@
 import requests
-from pprint import pprint
 import time
+
+with open('token.txt') as file:
+    vk_bot_token = file.readline()
+    vk_application_token = file.readline()
+    my_id = int(file.readline())
 
 
 class VK:
@@ -65,7 +69,7 @@ class VK:
             city = None
         params = {
             'count': 100,
-            'sex': 2,
+            'sex': sex,
             'birth_year': int(birthday_year),
             'has_photo': 1,
             'city': city,
@@ -122,9 +126,3 @@ class VK:
             else:
                 continue
         return self.data_list
-
-
-atoken = 'vk1.a.xG33q26zjvGhC7Vx5WVnVnP0AalCHEubq8_W5JYAHONKiLOc6qJSXTPLDwyrP3laua00KiLPPjeoO2ph0GRu-0Lv2FnaqvTgWf1OAxyh4OYnhBEDFtafWsl-P-J6C3036qG5-W6H4W45xKMiLyJM5KT5b3R_xMMOJUsVAKcEDSOxJ_30lSZt3pmU-mCKdAYV'
-auser_id = 1583746
-vk_methods = VK(atoken, auser_id)
-pprint(vk_methods.data_maker())

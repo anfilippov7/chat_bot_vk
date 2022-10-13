@@ -1,9 +1,8 @@
 import json
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
 from models_SQL_update import create_tables, People, Blacklist, Favourite
-from vk_search import VK
+from vk_application_funcs.vk_search import VK
 
 atoken = 'vk1.a.xG33q26zjvGhC7Vx5WVnVnP0AalCHEubq8_W5JYAHONKiLOc6qJSXTPLDwyrP3laua00KiLPPjeoO2ph0GRu-0Lv2FnaqvTgWf1OAxyh4OYnhBEDFtafWsl-P-J6C3036qG5-W6H4W45xKMiLyJM5KT5b3R_xMMOJUsVAKcEDSOxJ_30lSZt3pmU-mCKdAYV'
 # auser_id = 17331357
