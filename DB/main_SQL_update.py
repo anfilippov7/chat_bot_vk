@@ -10,11 +10,11 @@ auser_id = 1583746
 vk_methods = VK(atoken, auser_id)
 
 """
-
-Предварительно нужно создать базу данных в командной строке операционной системы командой: createdb -U postgres chat_bot_vk
-В переменной окружения операционной системы прописываем переменную DSN со значением 'postgresql://postgres:1234@localhost:5432/chat_bot_vk'
+Предварительно нужно создать базу данных в командной строке операционной системы командой: 
+createdb -U postgres chat_bot_vk
+В переменной окружения операционной системы прописываем переменную DSN со значением 
+'postgresql://postgres:1234@localhost:5432/chat_bot_vk'
 где 1234 это пароль от базы данных 
-
 """
 
 DSN = 'postgresql://postgres:1234@localhost:5432/chat_bot_vk'
@@ -30,14 +30,14 @@ session = Session()
 
 
 def people_record_data(data: json) -> 'record SQL':
-    """ Запись данных о людях, соответствующих критериям поиска в базу данных
+    """
+    Запись данных о людях, соответствующих критериям поиска в базу данных
 
     :param data: данные в формате json, сгенерированные функцией vk_methods.data_maker()
     :var q_people: запрос в таблицу People базы данных для поиска существующих записей у пользователя бота
     :var id_list: лист существующих записей id vk(search_vk_id) в таблице People базы данных у пользователя бота
     :return: True, Данные записаны в таблицу People базы данных!
     :return: False, ex
-
     """
     try:
         q_people = session.query(People).filter(People.auser_id == auser_id)
@@ -54,18 +54,18 @@ def people_record_data(data: json) -> 'record SQL':
 
 
 def delete_people_data(vk_id_delete: int) -> 'deleting an entry':
-    """ Удаление записи о найденных людях из базы данных
+    """
+    Удаление записи о найденных людях из базы данных
 
     :param vk_id_delete: существующий id vk в таблице People базы данных, который мы удаляем из базы данных
-    :var q_blacklist: запрос в таблицу Blacklist базы данных для поиска существующих записей в черном списке у пользователя бота
-    :var q_favourite: запрос в таблицу Favourite базы данных для поиска существующих записей в избранном у пользователя бота
-    :var id_list_blacklist: лист существующих записей id vk(search_vk_id) в таблице Blacklist базы данных у пользователя бота
-    :var id_list_favourite: лист существующих записей id vk(search_vk_id) в таблице Favourite базы данных у пользователя бота
+    :var q_blacklist: запрос в таблицу Blacklist БД для поиска существующих записей в черном списке у пользователя
+    :var q_favourite: запрос в таблицу Favourite БД для поиска существующих записей в избранном у пользователя
+    :var id_list_blacklist: существующие записи id vk(search_vk_id) в таблице Blacklist базы данных у пользователя
+    :var id_list_favourite: существующие записи id vk(search_vk_id) в таблице Favourite базы данных у пользователя
     :return: True, Данные удалены из таблицы People базы данных!
     :return: False, Удалите id {vk_id_delete} из черного списка!
     :return: False, Удалите id {vk_id_delete} из избранного списка!
-    :return: False, ex
-
+    :return: False, Ошибку
     """
     try:
         q_blacklist = session.query(Blacklist).filter(Blacklist.auser_id == auser_id)
@@ -85,17 +85,17 @@ def delete_people_data(vk_id_delete: int) -> 'deleting an entry':
 
 
 def blacklist_record_data(auser_id, id_blacklist: int) -> 'record blacklist SQL':
-    """ Запись данных о людях в таблицу Blacklist у пользователя бота
+    """
+    Запись данных о людях в таблицу Blacklist у пользователя бота
 
     :param auser_id: id пользователя бота telegram
     :param id_blacklist: id vk(search_vk_id) который пользователь бота telegram заносит в черный список
     :var q_people: запрос в таблицу People базы данных для поиска существующих записей у пользователя бота
-    :var q_blacklist: запрос в таблицу Blacklist базы данных для поиска существующих записей в черном списке у пользователя бота
-    :var id_list_blacklist лист существующих записей id vk(search_vk_id) в таблице Blacklist базы данных у пользователя бота
+    :var q_blacklist: запрос в таблицу Blacklist БД для поиска существующих записей в черном списке у пользователя
+    :var id_list_blacklist существующие записи id vk(search_vk_id) в таблице Blacklist БД у пользователя
     :return: True, Данные записаны в таблицу Blacklist базы данных!
     :return: False, Человек уже внесен в таблицу Blacklist базы данных!
     :return: False, ex
-
     """
     try:
         q_people = session.query(People).filter(People.auser_id == auser_id).filter(People.search_vk_id == id_blacklist)
@@ -114,7 +114,8 @@ def blacklist_record_data(auser_id, id_blacklist: int) -> 'record blacklist SQL'
 
 
 def delete_blacklist_data(auser_id, vk_id_delete: int) -> 'deleting an entry':
-    """ Удаление записи данных о людях из таблицы Blacklist у пользователя бота
+    """
+    Удаление записи данных о людях из таблицы Blacklist у пользователя бота
 
     :param auser_id: id пользователя бота telegram
     :param vk_id_delete: id vk(search_vk_id) который пользователь бота telegram удаляет из черного списка
@@ -132,13 +133,13 @@ def delete_blacklist_data(auser_id, vk_id_delete: int) -> 'deleting an entry':
 
 
 def favourites_record_data(auser_id, id_favourite: int) -> 'record favourite SQL':
-    """ Запись данных о людях в таблицу Favourite у пользователя бота
-
+    """
+    Запись данных о людях в таблицу Favourite у пользователя бота
     :param auser_id: id пользователя бота telegram
     :param id_favourite: id vk(search_vk_id) который пользователь бота telegram заносит в список избранное
     :var q_people: запрос в таблицу People базы данных для поиска существующих записей у пользователя бота
-    :var q_favourite: запрос в таблицу Favourite базы данных для поиска существующих записей в избранном у пользователя бота
-    :var id_list_favourite: лист существующих записей id vk(search_vk_id) в таблице Favourite базы данных у пользователя бота
+    :var q_favourite: запрос в таблицу Favourite БД для поиска существующих записей в избранном у пользователя бота
+    :var id_list_favourite: существующие записи id vk(search_vk_id) в таблице Favourite базы данных у пользователя
     :return: True, Данные записаны в базу данных favourites!
     :return: False, Человек уже внесен в базу данных!
     :return: False, ex
@@ -164,7 +165,8 @@ def favourites_record_data(auser_id, id_favourite: int) -> 'record favourite SQL
 
 
 def delete_favourites_data(auser_id, vk_id_delete: int) -> 'deleting an entry':
-    """ Удаление записи данных о людях из таблицы Favourite у пользователя бота
+    """
+    Удаление записи данных о людях из таблицы Favourite у пользователя бота
 
     :param auser_id: id пользователя бота telegram
     :param vk_id_delete: id vk(search_vk_id) который пользователь бота telegram удаляет из списка избранного
@@ -185,11 +187,12 @@ session.close()
 
 
 def display_data_people(auser_id: int) -> 'id vk':
-    """ Отображение списка отобранных кандидатов с учетом проверки их отсутствия в черном списке
+    """
+    Отображение списка отобранных кандидатов с учетом проверки их отсутствия в черном списке
 
     :param auser_id: id пользователя бота telegram
-    :var q_blacklist: запрос в таблицу Blacklist базы данных для поиска существующих записей в черном списке у пользователя бота
-    :var id_list_blacklist лист существующих записей id vk(search_vk_id) в таблице Blacklist базы данных у пользователя бота
+    :var q_blacklist: запрос в таблицу Blacklist БД для поиска существующих записей в черном списке у пользователя
+    :var id_list_blacklist существующие записи id vk(search_vk_id) в таблице Blacklist базы данных у пользователя
     :return: [list] data_display_people
 
     """
@@ -204,14 +207,13 @@ def display_data_people(auser_id: int) -> 'id vk':
     return data_display_people
 
 
-
 def display_favorite(auser_id: int) -> 'id vk':
-    """ Отображение списка избранных кандидатов
+    """
+    Отображение списка избранных кандидатов
     
     :param auser_id: id пользователя бота telegram
-    :var q_favourite: запрос в таблицу Favourite базы данных для поиска существующих записей в избранном у пользователя бота
+    :var q_favourite: запрос в таблицу Favourite БД для поиска существующих записей в избранном у пользователя бота
     :return: [list] data_display_favorite
-
     """
     data_display_favorite = []
     q_favorite = session.query(Favourite).filter(Favourite.auser_id == auser_id)
@@ -222,11 +224,4 @@ def display_favorite(auser_id: int) -> 'id vk':
 
 
 if __name__ == '__main__':
-    # people_record_data(vk_methods.data_maker())
-    # delete_people_data(602676)
-    # blacklist_record_data(auser_id, 50183)
-    # delete_blacklist_data(auser_id, 50183)
-    # favourites_record_data(auser_id, 133737442)
-    # delete_favourites_data(auser_id, 602676)
-    # display_data_people(auser_id)
     display_favorite(auser_id)
