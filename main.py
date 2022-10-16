@@ -3,13 +3,10 @@ from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from DB.main_SQL_update import favourites_record_data, blacklist_record_data, display_favorite, display_data_people, \
     people_record_data
 from VK.bot_funcs import vk_user, write_msg, longpoll
-from vk_search import VK
+from vk_search import VK, vk_application_token, my_id
 
+vk_methods = VK(vk_application_token, my_id)
 
-atoken = 'vk1.a.xG33q26zjvGhC7Vx5WVnVnP0AalCHEubq8_W5JYAHONKiLOc6qJSXTPLDwyrP3laua00KiLPPjeoO2ph0GRu-0Lv2FnaqvTgWf1OAxyh4OYnhBEDFtafWsl-P-J6C3036qG5-W6H4W45xKMiLyJM5KT5b3R_xMMOJUsVAKcEDSOxJ_30lSZt3pmU-mCKdAYV'
-auser_id = 17331357
-# auser_id = 1583746
-vk_methods = VK(atoken, auser_id)
 
 def main():
     counter_people = 0
@@ -96,6 +93,7 @@ def main():
                 my_keyboard.add_line()
                 my_keyboard.add_button(f'Next', VkKeyboardColor.SECONDARY)
                 write_msg(event.user_id, 'Пока', keyboard=my_keyboard)
+
 
 if __name__ == '__main__':
     main()
