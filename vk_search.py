@@ -1,10 +1,7 @@
 import requests
 import time
+from VK.tokens import vk_application_token, vk_bot_token, my_id
 
-vk_bot_token = 'vk1.a.182E6RNSPCMtWi5elQ64DAiC83beQcSKNVqGA0iisBQwhMF6LonPmtL0wTJQzaRj5dAwHcb00Jmieygk0yVpMOdhtGPAcIP3WYcUr1ptFaKaphSZuciZJl5Pxlv7bk4v3FjqF1SMLEFVYl0ZGnlWeu-AZtwmZNKvPlb5asz1ilZVtWEft6Kw1-3rivNLGCmj'
-vk_application_token = 'vk1.a.xG33q26zjvGhC7Vx5WVnVnP0AalCHEubq8_W5JYAHONKiLOc6qJSXTPLDwyrP3laua00KiLPPjeoO2ph0GRu-0Lv2FnaqvTgWf1OAxyh4OYnhBEDFtafWsl-P-J6C3036qG5-W6H4W45xKMiLyJM5KT5b3R_xMMOJUsVAKcEDSOxJ_30lSZt3pmU-mCKdAYV'
-my_id = 17331357
-# my_id = 1583746
 
 class VK:
     """
@@ -124,32 +121,4 @@ class VK:
             else:
                 continue
         return self.data_list
-
-# vk_user = VK(vk_application_token, 17331357)
-# print(vk_user.data_maker())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
