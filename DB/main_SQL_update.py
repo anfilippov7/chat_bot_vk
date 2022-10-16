@@ -2,13 +2,9 @@ import json
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from DB.models_SQL_update import create_tables, People, Blacklist, Favourite
-from vk_search import VK
+from vk_search import VK, vk_application_token, my_id
 
-
-atoken = 'vk1.a.xG33q26zjvGhC7Vx5WVnVnP0AalCHEubq8_W5JYAHONKiLOc6qJSXTPLDwyrP3laua00KiLPPjeoO2ph0GRu-0Lv2FnaqvTgWf1OAxyh4OYnhBEDFtafWsl-P-J6C3036qG5-W6H4W45xKMiLyJM5KT5b3R_xMMOJUsVAKcEDSOxJ_30lSZt3pmU-mCKdAYV'
-auser_id = 17331357
-# auser_id = 1583746
-vk_methods = VK(atoken, auser_id)
+vk_methods = VK(vk_application_token, my_id)
 
 """
 Предварительно нужно создать БД в командной строке операционной системы командой: createdb -U postgres chat_bot_vk
@@ -32,11 +28,11 @@ def people_record_data(data: json) -> 'record SQL':
 
     """
     try:
-        q_people = session.query(People).filter(People.auser_id == auser_id)
+        q_people = session.query(People).filter(People.my_id == my_id)
         id_list = [record_id.search_vk_id for record_id in q_people.all()]
         for record in data:
             if record['id'] not in id_list:
-                session.add(People(auser_id=auser_id, search_vk_id=record['id'], first_name=record['first_name'],
+                session.add(People(my_id=my_id, search_vk_id=record['id'], first_name=record['first_name'],
                                    last_name=record['last_name'], profile_link=record['profile_link'],
                                    photos_likes=(','.join(record['photos']))))
                 session.commit()
@@ -60,8 +56,8 @@ def delete_people_data(vk_id_delete: int) -> 'deleting an entry':
 
     """
     try:
-        q_blacklist = session.query(Blacklist).filter(Blacklist.auser_id == auser_id)
-        q_favourite = session.query(Favourite).filter(Favourite.auser_id == auser_id)
+        q_blacklist = session.query(Blacklist).filter(Blacklist.my_id == my_id)
+        q_favourite = session.query(Favourite).filter(Favourite.my_id == my_id)
         id_list_blacklist = [record_id.search_vk_id for record_id in q_blacklist.all()]
         id_list_favourite = [record_id.search_vk_id for record_id in q_favourite.all()]
         if vk_id_delete not in id_list_blacklist and vk_id_delete not in id_list_favourite:
@@ -76,7 +72,7 @@ def delete_people_data(vk_id_delete: int) -> 'deleting an entry':
         return False, ex
 
 
-def blacklist_record_data(auser_id, id_blacklist: int) -> 'record blacklist SQL':
+def blacklist_record_data(my_id, id_blacklist: int) -> 'record blacklist SQL':
     """ Запись данных о людях в таблицу Blacklist у пользователя бота
 
     :param auser_id: id пользователя бота telegram
@@ -90,13 +86,13 @@ def blacklist_record_data(auser_id, id_blacklist: int) -> 'record blacklist SQL'
 
     """
     try:
-        q_people = session.query(People).filter(People.auser_id == auser_id).filter(People.search_vk_id == id_blacklist)
-        q_blacklist = session.query(Blacklist).filter(Blacklist.auser_id == auser_id).filter(Blacklist.search_vk_id ==
-                                                                                             id_blacklist)
+        q_people = session.query(People).filter(People.auser_id == my_id).filter(People.search_vk_id == id_blacklist)
+        q_blacklist = session.query(Blacklist).filter(Blacklist.auser_id == my_id).filter(Blacklist.search_vk_id ==
+                                                                                          id_blacklist)
         id_list_blacklist = [record_id.search_vk_id for record_id in q_blacklist.all()]
         if id_blacklist not in id_list_blacklist:
             for record in q_people.all():
-                session.add(Blacklist(search_vk_id=record.search_vk_id, auser_id=auser_id, id_people=record.id))
+                session.add(Blacklist(search_vk_id=record.search_vk_id, my_id=my_id, id_people=record.id))
             session.commit()
             return True, 'Данные записаны в таблицу Blacklist базы данных!'
         else:
@@ -105,7 +101,7 @@ def blacklist_record_data(auser_id, id_blacklist: int) -> 'record blacklist SQL'
         return False, ex
 
 
-def delete_blacklist_data(auser_id, vk_id_delete: int) -> 'deleting an entry':
+def delete_blacklist_data(my_id, vk_id_delete: int) -> 'deleting an entry':
     """ Удаление записи данных о людях из таблицы Blacklist у пользователя бота
 
     :param auser_id: id пользователя бота telegram
@@ -115,15 +111,15 @@ def delete_blacklist_data(auser_id, vk_id_delete: int) -> 'deleting an entry':
 
     """
     try:
-        session.query(Blacklist).filter(Blacklist.auser_id == auser_id).filter(Blacklist.search_vk_id ==
-                                                                               vk_id_delete).delete()
+        session.query(Blacklist).filter(Blacklist.my_id == my_id).filter(Blacklist.search_vk_id ==
+                                                                         vk_id_delete).delete()
         session.commit()
         return True, 'Данные удалены из базы данных blacklist!'
     except Exception as ex:
         return False, ex
 
 
-def favourites_record_data(auser_id, id_favourite: int) -> 'record favourite SQL':
+def favourites_record_data(my_id, id_favourite: int) -> 'record favourite SQL':
     """ Запись данных о людях в таблицу Favourite у пользователя бота
 
     :param auser_id: id пользователя бота telegram
@@ -137,14 +133,13 @@ def favourites_record_data(auser_id, id_favourite: int) -> 'record favourite SQL
 
     """
     try:
-        q_people = session.query(People).filter(People.auser_id == auser_id).filter(People.search_vk_id ==
-                                                                                    id_favourite)
-        q_favourite = session.query(Favourite).filter(Favourite.auser_id == auser_id).filter(Favourite.search_vk_id ==
-                                                                                             id_favourite)
+        q_people = session.query(People).filter(People.my_id == my_id).filter(People.search_vk_id == id_favourite)
+        q_favourite = session.query(Favourite).filter(Favourite.my_id == my_id).filter(Favourite.search_vk_id ==
+                                                                                       id_favourite)
         id_list_favourite = [record.search_vk_id for record in q_favourite.all()]
         if id_favourite not in id_list_favourite:
             for record in q_people.all():
-                session.add(Favourite(auser_id=auser_id, search_vk_id=id_favourite, first_name=record.first_name,
+                session.add(Favourite(my_id=my_id, search_vk_id=id_favourite, first_name=record.first_name,
                                       last_name=record.last_name, profile_link=record.profile_link,
                                       photos_likes=record.photos_likes, id_people=record.id))
             session.commit()
@@ -155,7 +150,7 @@ def favourites_record_data(auser_id, id_favourite: int) -> 'record favourite SQL
         return False, ex
 
 
-def delete_favourites_data(auser_id, vk_id_delete: int) -> 'deleting an entry':
+def delete_favourites_data(my_id, vk_id_delete: int) -> 'deleting an entry':
     """ Удаление записи данных о людях из таблицы Favourite у пользователя бота
 
     :param auser_id: id пользователя бота telegram
@@ -165,8 +160,8 @@ def delete_favourites_data(auser_id, vk_id_delete: int) -> 'deleting an entry':
 
     """
     try:
-        session.query(Favourite).filter(Favourite.auser_id == auser_id).filter(Favourite.search_vk_id ==
-                                                                               vk_id_delete).delete()
+        session.query(Favourite).filter(Favourite.my_id == my_id).filter(
+            Favourite.search_vk_id == vk_id_delete).delete()
         session.commit()
         return True, 'Данные удалены из базы данных favourites!'
     except Exception as ex:
@@ -176,7 +171,7 @@ def delete_favourites_data(auser_id, vk_id_delete: int) -> 'deleting an entry':
 session.close()
 
 
-def display_data_people(auser_id: int) -> 'id vk':
+def display_data_people(my_id: int) -> 'id vk':
     """ Отображение списка отобранных кандидатов с учетом проверки их отсутствия в черном списке
 
     :param auser_id: id пользователя бота telegram
@@ -186,18 +181,17 @@ def display_data_people(auser_id: int) -> 'id vk':
 
     """
     data_display_people = []
-    q_people = session.query(People).filter(People.auser_id == auser_id)
-    q_blacklist = session.query(Blacklist).filter(Blacklist.auser_id == auser_id)
+    q_people = session.query(People).filter(People.my_id == my_id)
+    q_blacklist = session.query(Blacklist).filter(Blacklist.my_id == my_id)
     id_list_blacklist = [record_id.search_vk_id for record_id in q_blacklist.all()]
     for search in q_people.all():
         if search.search_vk_id not in id_list_blacklist:
-            data_display_people.append([search.id, search.auser_id, search.search_vk_id, search.first_name,
+            data_display_people.append([search.id, search.my_id, search.search_vk_id, search.first_name,
                                         search.last_name, search.profile_link, search.photos_likes])
     return data_display_people
 
 
-
-def display_favorite(auser_id: int) -> 'id vk':
+def display_favorite(my_id: int) -> 'id vk':
     """ Отображение списка избранных кандидатов
 
     :param auser_id: id пользователя бота telegram
@@ -206,19 +200,19 @@ def display_favorite(auser_id: int) -> 'id vk':
 
     """
     data_display_favorite = []
-    q_favorite = session.query(Favourite).filter(Favourite.auser_id == auser_id)
+    q_favorite = session.query(Favourite).filter(Favourite.my_id == my_id)
     for search in q_favorite.all():
-        data_display_favorite.append([search.id, search.auser_id, search.search_vk_id, search.first_name,
+        data_display_favorite.append([search.id, search.my_id, search.search_vk_id, search.first_name,
                                       search.last_name, search.profile_link, search.photos_likes])
     return data_display_favorite
 
 
-if __name__ == '__main__':
-    people_record_data(vk_methods.data_maker())
+# if __name__ == '__main__':
+#     people_record_data(vk_methods.data_maker())
     # delete_people_data(602676)
-    # blacklist_record_data(auser_id, 50183)
-    # delete_blacklist_data(auser_id, 50183)
-    # favourites_record_data(auser_id, 133737442)
-    # delete_favourites_data(auser_id, 602676)
-    # print(display_data_people(auser_id))
-    # display_favorite(auser_id)
+    # blacklist_record_data(my_id, 50183)
+    # delete_blacklist_data(my_id, 50183)
+    # favourites_record_data(my_id, 133737442)
+    # delete_favourites_data(my_id, 602676)
+    # print(display_data_people(my_id))
+    # display_favorite(my_id)
